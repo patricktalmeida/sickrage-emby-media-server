@@ -1,0 +1,40 @@
+DESCRIPTION
+
+    This project deploys a instance on AWS. It install emby for media streaming, sickrage for series snatching and transmission for torrent downloading.
+The only configuration needed will be explained on *DEPLOY* and after that you'll just have to configure the servers by adding your series.
+This project was developed so you will never have to SSH into the instance to configure nothing nor look into your AWS console for the instance ip.
+
+
+DEPLOY
+
+    To deploy this applications just execute "deploy.sh" and follow its steps to configure your terraform credentials.
+It will install and deploy terraform code for you.
+Terraform will launch one t2.micro with a root device and a low cost drive attached to store the episodes and it WILL NOT DELETE ON TERMINATION
+
+TRANSMISSION
+    Access web UI on "instance-ip:9091"
+    Transmission is already configured to monitor for .torrent on "/transmission" and download them to the mountpoint /mnt/sickrage
+Transmission allows you to upload .torrent files from it's web UI, so if sickrage does not snatch some episode or if you want to download a movie, feel free to upload it.
+
+SICKRAGE
+    Access web UI on "instance-ip:8081"
+    Sickrage needs to be configured to it's right paths on the web UI only once
+        - send .torrent to blackhole on /downlaods
+        - configure Search Clients and Search Providers as you want
+        - configure the video quality download size limits
+        - configure subtitles as you want
+        - add your series as you wish
+ 
+EMBY
+    Access web UI on "instance-ip:8096"
+    Emby will stream you every media you download. You will only need to follow through it's web UI first configuration.
+        - "/seres" is the path of you media
+
+UPLOAD SUBTITLE
+
+    Sometimes sickrage does not download properly episodes subtitles. There is a script in this project for you to download manually on you PC and upload the subtitle.
+    In the server there will be a script running as a DAEMON to pick the subtitle you uploaded and move it to the correct episode location automatically.
+
+
+    
+    
