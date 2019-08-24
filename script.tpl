@@ -87,7 +87,12 @@ set +x
 moveSubtitle() {
     if [ -f "\$DOWNLOAD_PATH/\$SERIE.srt" ]
     then
-        mv \$DOWNLOAD_PATH/\$SERIE.srt /mnt/sickrage-data/\$SERIE/\$SERIE.srt
+        if [[ -d "/mnt/sickrage-data/emby/\$SERIE" ]]; then
+            mv \$DOWNLOAD_PATH/\$SERIE.srt /mnt/sickrage-data/\$SERIE/\$SERIE.srt
+       else
+            rm \$DOWNLOAD_PATH/\$SERIE.srt
+       fi
+
     fi
 }
 
