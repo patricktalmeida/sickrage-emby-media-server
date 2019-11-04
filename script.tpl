@@ -26,6 +26,12 @@ mkdir /emby/media
 docker pull emby/embyserver
 docker run -d --name="emby" -e PUID=0 -e PGID=0 -v /emby:/config -v /mnt/sickrage-data:/series -p 8096:8096 emby/embyserver:latest  # patricktoledodea/emby for a stable image
 
+# install plex media server
+curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
+echo deb https://downloads.plex.tv/repo/deb public main | sudo tee -a /etc/apt/sources.list.d/plexmediaserver.list
+apt update
+apt install plexmediaserver
+
 # Transmission web “serverip:9091”
 add-apt-repository ppa:transmissionbt/ppa -y
 apt-get update
@@ -34,6 +40,21 @@ service transmission-daemon stop
 echo "TRANSMISSION_SETTINGS_PATH=/var/lib/transmission-daemon/info/settings.json" >> ~/.profile
 echo "PASSWD=${transmission_passwd}" >> ~/.profile
 source ~/.profile
+
+# create couchpotato docker
+docker run -d \
+  --name=couchpotato \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=Europe/London \
+  -e UMASK_SET=022 \
+  -p 5050:5050 \
+  -v /couchpotato:/config \
+  -v /couchpotato:/downloads \
+  -v /couchpotato:/movies \
+  -v /transmission:/torrents \
+  --restart unless-stopped \
+  linuxserver/couchpotato
 
 # remember to configure sickrage to blackhole .torrent into /downloads (/transmission)
 sed -i 's/"umask": 18,/"umask": 2,/g' $TRANSMISSION_SETTINGS_PATH
