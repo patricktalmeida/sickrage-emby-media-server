@@ -30,7 +30,7 @@ docker run -d --name="emby" -e PUID=0 -e PGID=0 -v /emby:/config -v /mnt/sickrag
 curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
 echo deb https://downloads.plex.tv/repo/deb public main | sudo tee -a /etc/apt/sources.list.d/plexmediaserver.list
 apt update
-apt install plexmediaserver
+apt install plexmediaserver -y
 
 # Transmission web “serverip:9091”
 add-apt-repository ppa:transmissionbt/ppa -y
