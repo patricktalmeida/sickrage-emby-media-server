@@ -19,6 +19,7 @@ mkfs.ext4 /dev/xvdg
 mount /dev/xvdg /mnt/sickrage-data
 chown -R root:root /mnt/sickrage-data/
 chmod 777 /mnt/sickrage-data
+echo "/dev/xvdg       /mnt/sickrage-data     ntfs      defaults    0      0" >> /etc/fstab
 
 # create emby server
 mkdir /emby
@@ -27,10 +28,27 @@ docker pull emby/embyserver
 docker run -d --name="emby" -e PUID=0 -e PGID=0 -v /emby:/config -v /mnt/sickrage-data:/series -p 8096:8096 emby/embyserver:latest  # patricktoledodea/emby for a stable image
 
 # install plex media server
-curl https://downloads.plex.tv/plex-keys/PlexSign.key | sudo apt-key add -
-echo deb https://downloads.plex.tv/repo/deb public main | sudo tee -a /etc/apt/sources.list.d/plexmediaserver.list
-apt update
-apt install plexmediaserver -y
+mkdir /plex
+docker run \
+-d \
+--name plex \
+-p 32400:32400/tcp \
+-p 3005:3005/tcp \
+-p 8324:8324/tcp \
+-p 32469:32469/tcp \
+-p 1900:1900/udp \
+-p 32410:32410/udp \
+-p 32412:32412/udp \
+-p 32413:32413/udp \
+-p 32414:32414/udp \
+-e TZ="<timezone>" \
+-e PLEX_CLAIM="claim-ouHZ2gYEKogdxRr3x3Ra" \
+-e ADVERTISE_IP="http://tvmediaserver.com:32400/" \
+-h mediaserver \
+-v /plex:/config \
+-v /plex:/transcode \
+-v /mnt/sickrage-data:/data \
+plexinc/pms-docker
 
 # Transmission web “serverip:9091”
 add-apt-repository ppa:transmissionbt/ppa -y
@@ -101,27 +119,40 @@ echo "#!/bin/bash
 #                                                                                                        #
 ##########################################################################################################
 
+#!/bin/bash
+
 DOWNLOAD_PATH=/subtitles
+DIR_PATH=/mnt/sickrage-data
 
 set +x
+
+findSubLocation() {
+    SERIES_DIRECTORY=\$(find \$DIR_PATH -type d | rev | cut -d / -f1 | grep -o '..E..S.*' | rev)
+    array=(`echo \$SERIES_DIRECTORY | sed 's/\s/\n/g'`)
+    SUB_NAME=$(find \$DOWNLOAD_PATH -iname ".srt" | rev | cut -d / -f1 | grep -o '..E..S.*' | rev | head -n1)
+}
 
 moveSubtitle() {
     if [ -f "\$DOWNLOAD_PATH/\$SERIE.srt" ]
     then
-        if [[ -d "/mnt/sickrage-data/emby/\$SERIE" ]]; then
-            mv \$DOWNLOAD_PATH/\$SERIE.srt /mnt/sickrage-data/\$SERIE/\$SERIE.srt
-       else
-            rm \$DOWNLOAD_PATH/\$SERIE.srt
-       fi
-
+        findSubLocation;
+        for i in \${array[@]}
+        do
+            if [[ "\$i" = "\$SUB_NAME" ]]; then
+                REAL_DIR=$(find \$DIR_PATH/\$i* -type d | cut -d / -f4 | head -n1)
+	            mv \$DOWNLOAD_PATH/\$SERIE.srt \$DIR_PATH/\$REAL_DIR/\$SERIE.srt 2> /errorlog
+            fi
+        done
     fi
 }
 
 watchDownloadsDirectory() {
     while true; do
-        SERIE=\`find \$DOWNLOAD_PATH -name "*.srt" | rev | cut -f 2- -d '.' | rev | cut -d/ -f3 | head -n 1\`
-        moveSubtitle
-        sleep 5
+        SERIE=`find \$DOWNLOAD_PATH -name "*.srt" | rev | cut -f 2- -d '.' | rev | cut -d/ -f3 | head -n 1`
+        if [[ \$SERIE != '' ]]; then
+            moveSubtitle;
+        fi
+        sleep 2
     done
 }
 
