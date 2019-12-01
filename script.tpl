@@ -159,7 +159,6 @@ watchDownloadsDirectory;
 moveSubtitle;" > watch_for_sub.sh
  
 echo "
-#!/bin/bash
 mount /dev/xvdg /mnt/sickrage-data
 exit 0" > /etc/init.d/mountboot
 chmod +x /etc/init.d/mountboot
