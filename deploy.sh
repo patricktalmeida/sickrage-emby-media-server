@@ -77,5 +77,10 @@ e.g 12345678"
 read ENTRY 
 echo "transmission_passwd = \"$ENTRY\"" >> terraform.tfvars
 
+echo "Enter the plex claim code:
+e.g claim-af9sNCosjWJDJ929F"
+read ENTRY
+echo "plex_claim = \"$ENTRY\"" >> terraform.tfvars
+
 terraform init
 echo yes | terraform apply
