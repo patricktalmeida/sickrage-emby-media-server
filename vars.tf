@@ -21,7 +21,7 @@ variable "ami_id" {
 }
 
 variable "instance_type" {
-  default = "t2.micro"
+  default = "t2.medium"
 }
 
 variable "ssh_key_name" {

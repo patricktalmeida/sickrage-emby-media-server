@@ -19,7 +19,6 @@ mkfs.ext4 /dev/xvdg
 mount /dev/xvdg /mnt/sickrage-data
 chown -R root:root /mnt/sickrage-data/
 chmod 777 /mnt/sickrage-data
-echo "/dev/xvdg       /mnt/sickrage-data     ntfs      defaults    0      0" >> /etc/fstab
 
 # create emby server
 mkdir /emby
@@ -27,7 +26,7 @@ mkdir /emby/media
 docker pull emby/embyserver
 docker run -d --name="emby" -e PUID=0 -e PGID=0 -v /emby:/config -v /mnt/sickrage-data:/series -p 8096:8096 emby/embyserver:latest  # patricktoledodea/emby for a stable image
 
-# install plex media server
+# install plex media server | go to plex.tv/claim and paste the code on terraform.tfvars plex_claim variable
 mkdir /plex
 docker run \
 -d \
@@ -42,7 +41,7 @@ docker run \
 -p 32413:32413/udp \
 -p 32414:32414/udp \
 -e TZ="<timezone>" \
--e PLEX_CLAIM="${plex_claim}" \ # enter plex.tv/claim and paste the code on terraform.tvars to claim the server to you account
+-e PLEX_CLAIM="${plex_claim}" \
 -e ADVERTISE_IP="http://tvmediaserver.com:32400/" \
 -h mediaserver \
 -v /plex:/config \
@@ -159,6 +158,13 @@ watchDownloadsDirectory() {
 watchDownloadsDirectory;
 moveSubtitle;" > watch_for_sub.sh
  
+echo "
+#!/bin/bash
+mount /dev/xvdg /mnt/sickrage-data
+exit 0" > /etc/init.d/mountboot
+chmod +x /etc/init.d/mountboot
+update-rc.d mountboot defaults
+
 chmod +x watch_for_sub.sh
 echo "bash /watch_for_sub.sh" >> ~/.profile
 source ~/.profile
