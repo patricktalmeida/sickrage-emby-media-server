@@ -47,3 +47,7 @@ variable "access_key_id" {
 variable "transmission_passwd" {
   description = "Create a file named terraform.tfvars and set a values for this variable or set a default value"
 }
+
+variable "plex_claim" {
+  description = "Create a file named terraform.tfvars and set a values for this variable or set a default value"
+}

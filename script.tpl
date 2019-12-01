@@ -42,7 +42,7 @@ docker run \
 -p 32413:32413/udp \
 -p 32414:32414/udp \
 -e TZ="<timezone>" \
--e PLEX_CLAIM="claim-ouHZ2gYEKogdxRr3x3Ra" \
+-e PLEX_CLAIM="${plex_claim}" \ # enter plex.tv/claim and paste the code on terraform.tvars to claim the server to you account
 -e ADVERTISE_IP="http://tvmediaserver.com:32400/" \
 -h mediaserver \
 -v /plex:/config \
@@ -127,9 +127,9 @@ DIR_PATH=/mnt/sickrage-data
 set +x
 
 findSubLocation() {
-    SERIES_DIRECTORY=\$(find \$DIR_PATH -type d | rev | cut -d / -f1 | grep -o '..E..S.*' | rev)
-    array=(`echo \$SERIES_DIRECTORY | sed 's/\s/\n/g'`)
-    SUB_NAME=$(find \$DOWNLOAD_PATH -iname ".srt" | rev | cut -d / -f1 | grep -o '..E..S.*' | rev | head -n1)
+    SERIES_DIRECTORY=`find \$DIR_PATH -type d | rev | cut -d / -f1 | grep -o '..E..S.*' | rev`
+    array=`echo \$SERIES_DIRECTORY | sed 's/\s/\n/g'`
+    SUB_NAME=`find \$DOWNLOAD_PATH -iname ".srt" | rev | cut -d / -f1 | grep -o '..E..S.*' | rev | head -n1`
 }
 
 moveSubtitle() {
@@ -139,7 +139,7 @@ moveSubtitle() {
         for i in \${array[@]}
         do
             if [[ "\$i" = "\$SUB_NAME" ]]; then
-                REAL_DIR=$(find \$DIR_PATH/\$i* -type d | cut -d / -f4 | head -n1)
+                REAL_DIR=`find \$DIR_PATH/\$i* -type d | cut -d / -f4 | head -n1`
 	            mv \$DOWNLOAD_PATH/\$SERIE.srt \$DIR_PATH/\$REAL_DIR/\$SERIE.srt 2> /errorlog
             fi
         done

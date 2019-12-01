@@ -23,6 +23,7 @@ resource "aws_instance" "media-server" {
   user_data              = "${data.template_file.script.rendered}"
   vpc_security_group_ids = ["${aws_security_group.media_sg.id}"]
   key_name               = "${var.ssh_key_name}"
+  availability_zone      = "${var.aws_az}"
   
   root_block_device {
     volume_type = "gp2"
