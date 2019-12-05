@@ -93,3 +93,45 @@ resource "aws_security_group_rule" "sickrage_sg_rule" {
   to_port   = 8081
   protocol  = "tcp"
 }
+
+resource "aws_security_group_rule" "transmission_sg_rule" {
+  count = "1"
+  description = "transmission open access"
+
+  security_group_id = "${aws_security_group.media_sg.id}"
+  type              = "ingress"
+
+  cidr_blocks      = ["0.0.0.0/0"]
+
+  from_port = 9091
+  to_port   = 9091
+  protocol  = "tcp"
+}
+
+resource "aws_security_group_rule" "plex_sg_rule" {
+  count = "1"
+  description = "plex open access"
+
+  security_group_id = "${aws_security_group.media_sg.id}"
+  type              = "ingress"
+
+  cidr_blocks      = ["0.0.0.0/0"]
+
+  from_port = 32400
+  to_port   = 32400
+  protocol  = "tcp"
+}
+
+resource "aws_security_group_rule" "couchpotato_sg_rule" {
+  count = "1"
+  description = "couchpotato open access"
+
+  security_group_id = "${aws_security_group.media_sg.id}"
+  type              = "ingress"
+
+  cidr_blocks      = ["0.0.0.0/0"]
+
+  from_port = 5050
+  to_port   = 5050
+  protocol  = "tcp"
+}
