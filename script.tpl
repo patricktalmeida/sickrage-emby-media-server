@@ -126,20 +126,21 @@ DIR_PATH=/mnt/sickrage-data
 set +x
 
 findSubLocation() {
-    SERIES_DIRECTORY=`find \$DIR_PATH -type d | rev | cut -d / -f1 | grep -o '..E..S.*' | rev`
-    array=`echo \$SERIES_DIRECTORY | sed 's/\s/\n/g'`
-    SUB_NAME=`find \$DOWNLOAD_PATH -iname ".srt" | rev | cut -d / -f1 | grep -o '..E..S.*' | rev | head -n1`
+        SERIES_DIRECTORY=$(find $DIR_PATH -type d | rev | cut -d / -f1 | grep -o '..E..S.*' | rev)
+        array=$(echo $SERIES_DIRECTORY | sed 's/\s/\n/g')
+        SUB_NAME=$(find $DOWNLOAD_PATH -iname "*.srt" | rev | cut -d / -f1 | grep -o '..E..S.*' | rev | head -n1)
 }
 
 moveSubtitle() {
-    if [ -f "\$DOWNLOAD_PATH/\$SERIE.srt" ]
+    if [ -f $DOWNLOAD_PATH/$SERIE.srt ]
     then
         findSubLocation;
-        for i in \${array[@]}
+        for i in ${array[@]}
         do
-            if [[ "\$i" = "\$SUB_NAME" ]]; then
-                REAL_DIR=`find \$DIR_PATH/\$i* -type d | cut -d / -f4 | head -n1`
-	            mv \$DOWNLOAD_PATH/\$SERIE.srt \$DIR_PATH/\$REAL_DIR/\$SERIE.srt 2> /errorlog
+            MKV_REAL_NAME=$(find $DIR_PATH/$i -name "*.mkv" | rev | cut -f 2- -d '.' | rev | cut -d/ -f5 | head -n 1)
+            if [[ $i = $SUB_NAME ]]; then
+                    REAL_DIR=$(find $DIR_PATH/$i* -type d | cut -d / -f4 | head -n1)
+                    mv $DOWNLOAD_PATH/$SERIE.srt $DIR_PATH/$REAL_DIR/$MKV_REAL_NAME.srt 2> /errorlog
             fi
         done
     fi
@@ -147,8 +148,8 @@ moveSubtitle() {
 
 watchDownloadsDirectory() {
     while true; do
-        SERIE=`find \$DOWNLOAD_PATH -name "*.srt" | rev | cut -f 2- -d '.' | rev | cut -d/ -f3 | head -n 1`
-        if [[ \$SERIE != '' ]]; then
+        SERIE=$(find $DOWNLOAD_PATH -name "*.srt" | rev | cut -f 2- -d '.' | rev | cut -d/ -f3 | head -n 1)
+        if [[ $SERIE != '' ]]; then
             moveSubtitle;
         fi
         sleep 2
