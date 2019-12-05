@@ -137,7 +137,7 @@ moveSubtitle() {
         findSubLocation;
         for i in ${array[@]}
         do
-            MKV_REAL_NAME=$(find $DIR_PATH/$i -name "*.mkv" | rev | cut -f 2- -d '.' | rev | cut -d/ -f5 | head -n 1)
+            MKV_REAL_NAME=$(find $DIR_PATH/$i* -name "*.mkv" | rev | cut -f 2- -d '.' | rev | cut -d/ -f5 | head -n 1)
             if [[ $i = $SUB_NAME ]]; then
                     REAL_DIR=$(find $DIR_PATH/$i* -type d | cut -d / -f4 | head -n1)
                     mv $DOWNLOAD_PATH/$SERIE.srt $DIR_PATH/$REAL_DIR/$MKV_REAL_NAME.srt 2> /errorlog
