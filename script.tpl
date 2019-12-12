@@ -47,6 +47,7 @@ docker run \
 -v /plex:/config \
 -v /plex:/transcode \
 -v /mnt/sickrage-data:/data \
+--restart unless-stopped \
 plexinc/pms-docker
 
 # Transmission web “serverip:9091”
@@ -90,7 +91,7 @@ service transmission-daemon start
 mkdir /sickrage
 mkdir /media
 docker pull sickrage/sickrage
-docker run -d --name="sickrage" -v /sickrage:/config -e PUID=0 -e PGID=0 -v /transmission:/downloads -v /mnt/sickrage-data:/tv -v /sickrage:/config -e TZ=Canada/Pacific -p 8081:8081 sickrage/sickrage:latest  # patricktoledodea/sickrage is a stable image
+docker run -d --name="sickrage" -v /sickrage:/config -e PUID=0 -e PGID=0 -v /transmission:/downloads -v /mnt/sickrage-data:/tv -v /sickrage:/config -e TZ=Canada/Pacific -p 8081:8081 --restart unless-stopped sickrage/sickrage:latest  # patricktoledodea/sickrage is a stable image
 
 # cron to delete .torrent files
 echo "#!/bin/bash
